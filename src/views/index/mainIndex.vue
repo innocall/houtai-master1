@@ -364,7 +364,7 @@ export default {
           vm.info[i] = new window.BMap.InfoWindow("<p style=’font-size:12px;lineheight:1.8em;’>" + "</br>名字：" + vm.arr[i].title + "</br>地址：" + vm.arr[i].address + "</br> 电话：" + vm.arr[i].tel + "</br></p>"); // 创建信息窗口对象
           this.map.setMapStyle({ style: "midnight" });
           marker[i] = new BMap.Marker(points);
-          marker[i].setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+          //marker[i].setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
           this.map.addOverlay(marker[i]);
           marker[i].addEventListener("mouseover", function() {
             this.openInfoWindow(vm.info[i]);
