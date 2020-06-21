@@ -55,6 +55,21 @@
             <el-tabs v-model="activeName" @tab-click="handleClick">
               <el-tab-pane label="待处理" name="first">
                 <ul class="ul-container">
+                  <li v-if="abnormal.length > 0" class="line-li" v-for="item in abnormal">
+                    <span v-if="item.iem_hr > 0 || item.iem_oxygen > 0 || item.iem_temp > 0" class="left-text">
+                      用户{{item.iem_username}}<span v-if="item.iem_hr > 0">心率</span><span v-if="item.iem_oxygen > 0">血氧</span><span v-if="item.iem_temp > 0">体温</span>异常
+                    </span>
+                    <!--<span class="center-text">18分钟前</span>-->
+                    <span class="right-text">{{getLocalTime(item.creattime)}}</span>
+                  </li>
+                  <li v-if="abnormal.length == 0" class="no-data">
+                    <img src="../../../static/imgs/index/no.png" alt />
+                    暂无已处理数据
+                  </li>
+                </ul>
+              </el-tab-pane>
+              <el-tab-pane label="已处理" name="second">
+                <ul class="ul-container">
                   <!-- <li class="line-li" v-for="item in 7">
                     <span class="left-text">用户张文豪数据异常</span>
                     <span class="center-text">20分钟前</span>
@@ -63,19 +78,6 @@
                   <li class="no-data">
                     <img src="../../../static/imgs/index/no.png" alt />
                     暂无待处理数据
-                  </li>
-                </ul>
-              </el-tab-pane>
-              <el-tab-pane label="已处理" name="second">
-                <ul class="ul-container">
-                  <!-- <li class="line-li" v-for="item in 7">
-                    <span class="left-text">用户张文豪数据正常</span>
-                    <span class="center-text">18分钟前</span>
-                    <span class="right-text">【已处理】</span>
-                  </li> -->
-                  <li class="no-data">
-                    <img src="../../../static/imgs/index/no.png" alt />
-                    暂无已处理数据
                   </li>
                 </ul>
               </el-tab-pane>
@@ -217,7 +219,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("msite", ["dingwei", "userData"]),
+    ...mapGetters("msite", ["dingwei", "userData","abnormal"]),
   },
   watch: {
     dingwei(val) {
@@ -233,7 +235,15 @@ export default {
     },
   },
   mounted() {
-    this.loadPost();
+    var _this = this; //声明一个变量指向vue实例this,保证作用域一致
+    _this.loadPost();
+    //调用异常接口
+     _this.loadPost2();
+    this.timer = setInterval(function() {
+      _this.loadPost();
+      //调用异常接口
+      _this.loadPost2();
+    }, 120000);
     var urlName = window.location.href;
     if (urlName.indexOf("bgIndex") >= 0) {
       this.isShow = false;
@@ -252,9 +262,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions("msite", ["loadPost"]),
+    ...mapActions("msite", ["loadPost","loadPost2"]),
     handleClick(tab, event) {
       // console.log(tab, event);
+    },
+    getLocalTime(nS) {
+      return new Date(parseInt(nS)*1000).toJSON().slice(0,10)
     },
     //地址列表
     _getAddressList: function (item,point) {
@@ -590,13 +603,13 @@ export default {
               border-bottom: 0.0625rem solid #134083;
               padding-bottom: 0.6875rem;
               .left-text {
-                width: 50%;
+                width: 60%;
               }
               .center-text {
                 width: 30%;
               }
               .right-text {
-                width: 20%;
+                width: 30%;
               }
             }
             .no-data{

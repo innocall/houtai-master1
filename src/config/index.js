@@ -124,6 +124,9 @@ const url = {
         ceshi:'api/user/moment/healthInfoList',
         //ceshi:'index/admin/healthInfoList',
 
+        //异常数据
+        abnormal:'api/user/moment/user_abnormal',
+
     }
 }
 

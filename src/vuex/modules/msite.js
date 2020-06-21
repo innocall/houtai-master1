@@ -5,7 +5,8 @@ import {getAddressReq} from "../../api";
 
 const state = {
     dingwei:[],
-    userData:[]
+    userData:[],
+    abnormal:[]
 }
 
 const mutations = {
@@ -36,6 +37,27 @@ const actions = {
             }
         })
     },
+    loadPost2({commit, dispatch}, data = {}) {
+      const params = {
+        mobile: 15768459114
+      }
+      fetch({commit,params, dispatch, method: 'post',
+        url: getUrl('abnormal'),
+        before() {
+        },
+        success ({ res, commit, dispatch }) {
+          if (res) {
+            state.abnormal = res.data
+          }
+          data.scCallback && data.scCallback(res);
+        },
+        error ({ err, commit, dispatch }){
+        },
+        after () {
+          data.afterCallback && data.afterCallback()
+        }
+      })
+    },
 }
 
 const getters = {
@@ -44,6 +66,9 @@ const getters = {
     },
     userData(state){
         return state.userData
+    },
+    abnormal(state){
+        return state.abnormal
     }
 }
 
