@@ -26,7 +26,10 @@ function req_map_get(url, data, callback) {
         // console.log('parsed json', json)
         typeof callback == "function" && callback(json);
       }).catch(function(ex) {
-        // console.log('parsing failed', ex)
+        var json = {};
+        json.status = 1;
+        typeof callback == "function" && callback(json);
+         console.log("地址解析错误",ex);
     })
 }
 

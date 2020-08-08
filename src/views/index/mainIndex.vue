@@ -224,11 +224,17 @@ export default {
   watch: {
     dingwei(val) {
       let that = this;
-      console.log(val.length);
+      console.log(val);
       that.len = val.length;
       val.map((item, idx) => {
+        if(item.iem_user_name == '徐洋')
+        {
+        console.log("转换前地址：" + item.Longitude + "," + item.Latitude);
+        }
         if (item.Longitude && item.Latitude) {
-          let point = item.Latitude + "," + item.Longitude;
+          var x = item.Longitude;
+          var y = item.Latitude;
+          let point = y + "," + x;
           that._getAddressList(item,point);
         }
       });
@@ -258,7 +264,7 @@ export default {
   activated: function () {
     let vm = this
     if(localStorage.getItem('userInfo')){
-    vm.userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      vm.userInfo = JSON.parse(localStorage.getItem('userInfo'));
     }
   },
   methods: {
@@ -272,6 +278,7 @@ export default {
     //地址列表
     _getAddressList: function (item,point) {
       let that = this;
+      //bd09ll（百度经纬度坐标）、gcj02ll（国测局经纬度坐标）、wgs84ll（ GPS经纬度）
       let data = {
         callback : 'renderReverse',
         location: point,
@@ -279,15 +286,31 @@ export default {
         pois : 1,
         latest_admin : 1,
         coordtype:'wgs84ll',
-        ak:'R40a87AFGzoBz4xc9PWE6WzASGVehg4r'
+        ak:'yHNXnYjfdrIGxGNfgZHjVj89WZODASuV'
       };
       getAddressReq(data, function (res) {
         if(res.status == 0){
           let addressStr = res.result.formatted_address;
           that.arr.push({
             title: item.iem_user_name,
-            point: item.Longitude + "," + item.Latitude,
+            point: point,
             address: addressStr,
+            tel: item.iem_user_phone,
+            Oxygen: item.Oxygen,
+            Hr: item.Hr,
+            Temp: item.Temp,
+            StepNumber: item.StepnNmber,
+            iem_chronic : item.iem_chronic,
+            iem_blood : item.iem_blood,
+            iem_disability : item.iem_disability,
+            iem_incompetent : item.iem_incompetent,
+            UpdateTime: item.UpdateTime
+          });
+        } else {
+          that.arr.push({
+            title: item.iem_user_name,
+            point: point,
+            address: "解析异常",
             tel: item.iem_user_phone,
             Oxygen: item.Oxygen,
             Hr: item.Hr,
@@ -323,6 +346,7 @@ export default {
     },
     _map() {
       let vm = this;
+
       if (vm.len == vm.arr.length) {
         this.top = this.getScrollTop()
         if (this.top) {
@@ -352,37 +376,37 @@ export default {
         vm.map.addControl(ctrlSca);
         var marker = [];
         for (let i = 0; i < this.arr.length; i++) {
-          var p0 = this.arr[i].point.split(",")[0]; //
-          var p1 = this.arr[i].point.split(",")[1]; //按照原数组的point格式将地图点坐标的经纬度分别提出来
-          var x = p0;
-          var y = p1;
-          var z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * x_pi);
-          var theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * x_pi);
-          var bd_lon = z * Math.cos(theta) + 0.0065;
-          var bd_lat = z * Math.sin(theta) + 0.006;
-          var points =new BMap.Point(bd_lon,bd_lat);
-          vm.info[i] = new window.BMap.InfoWindow("<p style=’font-size:12px;lineheight:1.8em;’>" + "</br>名字：" + vm.arr[i].title + "</br>地址：" + vm.arr[i].address + "</br> 电话：" + vm.arr[i].tel + "</br></p>"); // 创建信息窗口对象
-          this.map.setMapStyle({ style: "midnight" });
-          marker[i] = new BMap.Marker(points);
-          //marker[i].setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
-          this.map.addOverlay(marker[i]);
-          marker[i].addEventListener("mouseover", function() {
-            this.openInfoWindow(vm.info[i]);
-          });
-          marker[i].addEventListener("click", function() {
-            vm.Oxygen = vm.arr[i].Oxygen;
-            vm.Hr = vm.arr[i].Hr;
-            vm.Temp = vm.arr[i].Temp;
-            vm.StepNumber = vm.arr[i].StepNumber;
-            vm.UpdateTime = vm.arr[i].UpdateTime;
-            vm.iem_chronic = vm.arr[i].iem_chronic;
-            vm.iem_blood = vm.arr[i].iem_blood;
-            vm.iem_disability = vm.arr[i].iem_disability;
-            vm.iem_incompetent = vm.arr[i].iem_incompetent;
-            localStorage.setItem('userInfo', JSON.stringify(vm.arr[i]));
-            vm.userInfo = JSON.parse(localStorage.getItem('userInfo'));
-          });
-        }
+            var p1 = this.arr[i].point.split(",")[0]; //
+            var p0 = this.arr[i].point.split(",")[1]; //按照原数组的point格式将地图点坐标的经纬度分别提出来
+            var x = p0;
+            var y = p1;
+            var z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * x_pi);
+            var theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * x_pi);
+            var bd_lon = z * Math.cos(theta) + 0.0065;
+            var bd_lat = z * Math.sin(theta) + 0.006;
+            var points =new BMap.Point(bd_lon,bd_lat);
+            vm.info[i] = new window.BMap.InfoWindow("<p style=’font-size:12px;lineheight:1.8em;’>" + "</br>名字：" + vm.arr[i].title + "</br>地址：" + vm.arr[i].address + "</br> 电话：" + vm.arr[i].tel + "</br></p>"); // 创建信息窗口对象
+            this.map.setMapStyle({ style: "midnight" });
+            marker[i] = new BMap.Marker(points);
+            //marker[i].setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+            this.map.addOverlay(marker[i]);
+            marker[i].addEventListener("mouseover", function() {
+              this.openInfoWindow(vm.info[i]);
+            });
+            marker[i].addEventListener("click", function() {
+              vm.Oxygen = vm.arr[i].Oxygen;
+              vm.Hr = vm.arr[i].Hr;
+              vm.Temp = vm.arr[i].Temp;
+              vm.StepNumber = vm.arr[i].StepNumber;
+              vm.UpdateTime = vm.arr[i].UpdateTime;
+              vm.iem_chronic = vm.arr[i].iem_chronic;
+              vm.iem_blood = vm.arr[i].iem_blood;
+              vm.iem_disability = vm.arr[i].iem_disability;
+              vm.iem_incompetent = vm.arr[i].iem_incompetent;
+              localStorage.setItem('userInfo', JSON.stringify(vm.arr[i]));
+              vm.userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            });
+          }
       }
     }
   }

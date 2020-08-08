@@ -30,6 +30,7 @@ export const http = {
             options.method = 'post';
             options.data = JSON.stringify(params);
         }
+        options.timeout = 1000 * 60 * 2;
         return new Promise((resolve, reject) => {
             axiosInstance(options)
                 .then(response => {

@@ -191,6 +191,7 @@ export default {
     dingwei(val) {
       val.map((item, idx) => {
         if (item.Longitude && item.Latitude) {
+
           this.arr.push({
             title: item.iem_user_name,
             point: item.Longitude + "," + item.Latitude,
